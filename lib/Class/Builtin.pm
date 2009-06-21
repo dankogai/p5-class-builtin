@@ -11,7 +11,7 @@ use Class::Hash ();
 require Exporter;
 use base qw/Exporter/;
 
-our @EXPORT = qw(OBJ);
+our @EXPORT = qw(OO);
 
 our %new = (
     '' => 'Class::Scalar',
@@ -36,7 +36,7 @@ sub new {
     }
 }
 
-sub OBJ { __PACKAGE__->new(@_) }
+sub OO { __PACKAGE__->new(@_) }
 
 1; # End of Class::Builtin
 
@@ -46,7 +46,7 @@ Class::Builtin - Scalar/Array/Hash as objects
 
 =head1 VERSION
 
-$Id$
+$Id: Builtin.pm,v 0.1 2009/06/21 09:09:26 dankogai Exp dankogai $
 
 =head1 SYNOPSIS
 
@@ -55,9 +55,9 @@ Quick summary of what the module does.
 Perhaps a little code snippet.
 
     use Class::Builtin;
-    my $scalar = OBJ('perl');
-    my $array  = OBJ([0..9]);
-    my $hash   = OBJ({key=>'value'});
+    my $scalar = OO('perl');
+    my $array  = OO([0..9]);
+    my $hash   = OO({key=>'value'});
 
     print $scalar->length; # 4;
     print $array->length;  # 10;
@@ -65,7 +65,7 @@ Perhaps a little code snippet.
 
 =head1 EXPORT
 
-C<OBJ>
+C<OO>
 
 =head1 FUNCTIONS
 

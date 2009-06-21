@@ -1,5 +1,8 @@
-Revision history for Class-Builtin
-
-0.01    Date/time
-        First version, released on an unsuspecting world.
+#
+# $Id: Changes,v 0.1 2009/06/21 09:09:26 dankogai Exp dankogai $
+#
+# Revision history for Class-Builtin
+$Revision: 0.1 $
++ *
+  First version, released on an unsuspecting world.
 

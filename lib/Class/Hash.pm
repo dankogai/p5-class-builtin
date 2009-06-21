@@ -73,12 +73,12 @@ Class::Hash - Hash as an object
 
 =head1 VERSION
 
-$Id$
+$Id: Hash.pm,v 0.1 2009/06/21 09:09:26 dankogai Exp dankogai $
 
 =head1 SYNOPSIS
 
   use Class::Hash;                               # use Class::Builtin;
-  my $foo = Class::Hash->new({ key => 'value'}); # OBJ({ key => 'value' });
+  my $foo = Class::Hash->new({ key => 'value'}); # OO({ key => 'value' });
   print $foo->keys->[0]; # 'key'
 
 =head1 EXPORT

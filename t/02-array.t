@@ -4,7 +4,7 @@ use warnings;
 use Class::Builtin;
 use Test::More qw/no_plan/; #tests => 1;
 
-my $o = OBJ([0..7]);
+my $o = OO([0..7]);
 is(ref $o, 'Class::Array', ref $o);
 is($o->[1], 1);
 is($o->[1]->length, 1);

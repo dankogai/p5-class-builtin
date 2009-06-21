@@ -204,12 +204,12 @@ Class::Array - Array as an object
 
 =head1 VERSION
 
-$Id$
+$Id: Array.pm,v 0.1 2009/06/21 09:09:26 dankogai Exp dankogai $
 
 =head1 SYNOPSIS
 
   use Class::Array;                    # use Class::Builtin;
-  my $foo = Class::Array->new([0..9]); # OBJ([0..9]);
+  my $foo = Class::Array->new([0..9]); # OO([0..9]);
   print $foo->length; # 10
 
 =head1 EXPORT

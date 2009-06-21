@@ -1,5 +1,5 @@
 package scalar::object;
-use 5.010;
+# use 5.010; -- works ok on 5.8
 use strict;
 use warnings;
 use overload ();
@@ -22,7 +22,7 @@ sub unimport {
 }
 
 sub in_effect {
-    my $level = shift // 0;
+    my $level = shift || 0;
     my $hinthash = ( caller($level) )[10];
     return $hinthash->{$class};
 }
@@ -36,7 +36,7 @@ scalar::object - automagically turns scalar constants into objects
 
 =head1 VERSION
 
-$Id$
+$Id: object.pm,v 0.1 2009/06/21 09:09:26 dankogai Exp dankogai $
 
 =head1 SYNOPSIS
 

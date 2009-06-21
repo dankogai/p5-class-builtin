@@ -142,8 +142,6 @@ for my $meth (qw/readonly tainted isvstring looks_like_number/){
     die $@ if $@;
 }
 
-
-
 1; # End of Class::Scalar
 
 =head1 NAME
@@ -152,12 +150,12 @@ Class::Scalar - Scalar as an object
 
 =head1 VERSION
 
-$Id$
+$Id: Scalar.pm,v 0.1 2009/06/21 09:09:26 dankogai Exp dankogai $
 
 =head1 SYNOPSIS
 
   use Class::Scalar;                    # use Class::Builtin;
-  my $foo = Class::Scalar->new('perl'); # OBJ('perl');
+  my $foo = Class::Scalar->new('perl'); # OO('perl');
   print $foo->length; # 4
 
 =head1 EXPORT
