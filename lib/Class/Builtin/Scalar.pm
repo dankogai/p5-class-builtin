@@ -1,8 +1,8 @@
-package Class::Scalar;
+package Class::Builtin::Scalar;
 use 5.008001;
 use warnings;
 use strict;
-our $VERSION = sprintf "%d.%02d", q$Revision: 0.1 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%02d", q$Revision: 0.2 $ =~ /(\d+)/g;
 
 use Encode ();
 use Scalar::Util ();
@@ -54,7 +54,7 @@ my @unary = qw(
 
 for my $meth (@unary) {
     eval qq{
-    sub Class::Scalar::$meth
+    sub Class::Builtin::Scalar::$meth
     {
 	my \$self = shift;
 	my \$ret  = CORE::$meth(\$\$self);
@@ -78,18 +78,18 @@ sub split {
     my $self = shift;
     my $pat  = shift || qr//;
     my @ret  = CORE::split $pat, $$self;
-    Class::Array->new( [@ret] );
+    Class::Builtin::Array->new( [@ret] );
 }
 
-sub methods{
-    Class::Array->new( [sort grep { defined &{$_} }keys %Class::Scalar:: ] );
+sub methods {
+    Class::Builtin::Array->new(
+        [ sort grep { defined &{$_} } keys %Class::Builtin::Scalar:: ] );
 }
-
 
 # Encode-related
 for my $meth (qw/decode encode decode_utf8/){
     eval qq{
-    sub Class::Scalar::$meth
+    sub Class::Builtin::Scalar::$meth
     {
 	my \$self = shift;
 	my \$ret  = Encode::$meth(\$\$self,\@_);
@@ -100,7 +100,7 @@ for my $meth (qw/decode encode decode_utf8/){
 }
 for my $meth (qw/encode_utf8/){
     eval qq{
-    sub Class::Scalar::$meth
+    sub Class::Builtin::Scalar::$meth
     {
 	my \$self = shift;
 	my \$ret  = Encode::$meth(\$\$self);
@@ -110,9 +110,9 @@ for my $meth (qw/encode_utf8/){
     die $@ if $@;
 }
 
-
 # Scalar::Util
 # dualvar() and  set_prototype() not included
+
 our @scalar_util = qw(
   blessed isweak readonly refaddr reftype tainted
   weaken isvstring looks_like_number
@@ -120,7 +120,7 @@ our @scalar_util = qw(
 
 for my $meth (qw/blessed isweak refaddr reftype weaken/){
     eval qq{
-    sub Class::Scalar::$meth
+    sub Class::Builtin::Scalar::$meth
     {
 	my \$self = shift;
 	my \$ret  = Scalar::Util::$meth(\$self);
@@ -132,7 +132,7 @@ for my $meth (qw/blessed isweak refaddr reftype weaken/){
 
 for my $meth (qw/readonly tainted isvstring looks_like_number/){
     eval qq{
-    sub Class::Scalar::$meth
+    sub Class::Builtin::Scalar::$meth
     {
 	my \$self = shift;
 	my \$ret  = Scalar::Util::$meth(\$\$self);
@@ -142,20 +142,20 @@ for my $meth (qw/readonly tainted isvstring looks_like_number/){
     die $@ if $@;
 }
 
-1; # End of Class::Scalar
+1; # End of Class::Builtin::Scalar
 
 =head1 NAME
 
-Class::Scalar - Scalar as an object
+Class::Builtin::Scalar - Scalar as an object
 
 =head1 VERSION
 
-$Id: Scalar.pm,v 0.1 2009/06/21 09:09:26 dankogai Exp dankogai $
+$Id: Scalar.pm,v 0.2 2009/06/21 15:44:41 dankogai Exp dankogai $
 
 =head1 SYNOPSIS
 
-  use Class::Scalar;                    # use Class::Builtin;
-  my $foo = Class::Scalar->new('perl'); # OO('perl');
+  use Class::Builtin::Scalar;                    # use Class::Builtin::Builtin;
+  my $foo = Class::Builtin::Scalar->new('perl'); # OO('perl');
   print $foo->length; # 4
 
 =head1 EXPORT
@@ -166,7 +166,7 @@ None.  But see L<Class::Builtin>
 
 This section is under construction. For the time being, try
 
-  print Class::Scalar->new(0)->methods->join("\n")
+  print Class::Builtin::Scalar->new(0)->methods->join("\n")
 
 =head1 TODO
 
@@ -182,7 +182,7 @@ This section itself is to do :)
 
 =head1 SEE ALSO
 
-L<Class::Builtin>, L<Class::Array>, L<Class::Hash>
+L<Class::Builtin>, L<Class::Builtin::Array>, L<Class::Builtin::Hash>
 
 =head1 AUTHOR
 

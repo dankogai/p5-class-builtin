@@ -1,8 +1,8 @@
-package Class::Hash;
+package Class::Builtin::Hash;
 use 5.008001;
 use warnings;
 use strict;
-our $VERSION = sprintf "%d.%02d", q$Revision: 0.1 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%02d", q$Revision: 0.2 $ =~ /(\d+)/g;
 
 use overload (
     '""' => sub { 
@@ -30,7 +30,7 @@ sub clone{
 sub delete {
     my $self = shift;
     my @deleted = CORE::delete @{$self}{@_};
-    Class::Array->new([@deleted]);
+    Class::Builtin::Array->new([@deleted]);
 }
 
 sub exists {
@@ -41,9 +41,9 @@ sub exists {
 
 for my $meth (qw/keys values/){
     eval qq{
-     sub Class::Hash::$meth
+     sub Class::Builtin::Hash::$meth
      {
-       Class::Array->new([CORE::$meth \%{\$_[0]}])
+       Class::Builtin::Array->new([CORE::$meth \%{\$_[0]}])
      }
     };
     die $@ if $@;
@@ -61,25 +61,26 @@ sub each {
     }
 }
 
-sub methods{
-    Class::Array->new( [sort grep { defined &{$_} }keys %Class::Hash:: ] );
+sub methods {
+    Class::Builtin::Array->new(
+        [ sort grep { defined &{$_} } keys %Class::Builtin::Hash:: ] );
 }
 
-1; # End of Class::Hash
+1; # End of Class::Builtin::Hash
 
 =head1 NAME
 
-Class::Hash - Hash as an object
+Class::Builtin::Hash - Hash as an object
 
 =head1 VERSION
 
-$Id: Hash.pm,v 0.1 2009/06/21 09:09:26 dankogai Exp dankogai $
+$Id: Hash.pm,v 0.2 2009/06/21 15:44:41 dankogai Exp dankogai $
 
 =head1 SYNOPSIS
 
-  use Class::Hash;                               # use Class::Builtin;
-  my $foo = Class::Hash->new({ key => 'value'}); # OO({ key => 'value' });
-  print $foo->keys->[0]; # 'key'
+  use Class::Builtin::Hash;                             # use Class::Builtin;
+  my $oo = Class::Builtin::Hash->new({key => 'value'}); # OO({key =>'value'});
+  print $oo->keys->[0]; # 'key'
 
 =head1 EXPORT
 
@@ -89,7 +90,7 @@ None.  But see L<Class::Builtin>
 
 This section is under construction. For the time being, try
 
-  print Class::Hash->new({})->methods->join("\n")
+  print Class::Builtin::Hash->new({})->methods->join("\n")
 
 =head1 TODO
 
@@ -103,7 +104,7 @@ This section itself is to do :)
 
 =head1 SEE ALSO
 
-L<Class::Builtin>, L<Class::Scalar>, L<Class::Array>
+L<Class::Builtin>, L<Class::Builtin::Scalar>, L<Class::Builtin::Array>
 
 =head1 AUTHOR
 

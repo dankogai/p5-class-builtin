@@ -1,8 +1,8 @@
-package Class::Array;
+package Class::Builtin::Array;
 use 5.008001;
 use warnings;
 use strict;
-our $VERSION = sprintf "%d.%02d", q$Revision: 0.1 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%02d", q$Revision: 0.2 $ =~ /(\d+)/g;
 
 use List::Util ();
 
@@ -22,7 +22,7 @@ sub clone{
 
 for my $unary (qw/shift pop/) {
     eval qq{
-     sub Class::Array::$unary
+     sub Class::Builtin::Array::$unary
      { CORE::$unary \@{\$_[0]} }
     };
     die $@ if $@;
@@ -30,7 +30,7 @@ for my $unary (qw/shift pop/) {
 
 for my $binary (qw/unshift push/) {
     eval qq{
-      sub Class::Array::$binary
+      sub Class::Builtin::Array::$binary
       {
         my \$self = CORE::shift;
         CORE::$binary \@\$self, map { Class::Builtin->new(\$_) } \@_;
@@ -63,7 +63,7 @@ sub spliced{
 
 for my $passive (qw/shift pop unshift push/) {
     eval qq{
-      sub Class::Array::${passive}ed
+      sub Class::Builtin::Array::${passive}ed
       {
         my \$self = CORE::shift;
         \$self->clone->$passive(\@_);
@@ -75,7 +75,7 @@ for my $passive (qw/shift pop unshift push/) {
 sub delete {
     my $self = shift;
     my @deleted = CORE::delete @{$self}[@_];
-    Class::Array->new([@deleted]);
+    Class::Builtin::Array->new([@deleted]);
 }
 
 sub concat {
@@ -85,8 +85,8 @@ sub concat {
     $self;
 }
 
-sub ref    { Class::Scalar->new(CORE::ref $_[0]) }
-sub length { Class::Scalar->new(CORE::scalar @{$_[0]}) }
+sub ref    { Class::Builtin::Scalar->new(CORE::ref $_[0]) }
+sub length { Class::Builtin::Scalar->new(CORE::scalar @{$_[0]}) }
 
 sub sort {
     my $self   = CORE::shift;
@@ -129,36 +129,37 @@ sub map {
 
 *each = \&map;
 
-sub each_with_index{
-   my $self   = CORE::shift;
-   my $block  = CORE::shift or die;
-   my @mapped;
-   for my $i (0 .. $self->length - 1){
-       CORE::push @mapped, $block->($self->[$i], Class::Scalar->new($i));
-   }
-   __PACKAGE__->new([ @mapped ]);
+sub each_with_index {
+    my $self = CORE::shift;
+    my $block = CORE::shift or die;
+    my @mapped;
+    for my $i ( 0 .. $self->length - 1 ) {
+        CORE::push @mapped,
+          $block->( $self->[$i], Class::Builtin::Scalar->new($i) );
+    }
+    __PACKAGE__->new( [@mapped] );
 }
 
-sub join{
+sub join {
     my $self = CORE::shift;
     my $sep  = CORE::shift || '';
-    my $str  = CORE::join($sep, @$self);
-    Class::Scalar->new($str);
+    my $str  = CORE::join( $sep, @$self );
+    Class::Builtin::Scalar->new($str);
 }
 
-
-sub methods{
-    Class::Array->new([sort grep { defined &{$_} } keys %Class::Array::])
+sub methods {
+    Class::Builtin::Array->new(
+        [ sort grep { defined &{$_} } keys %Class::Builtin::Array:: ] );
 }
 
 # List::Util related
 
 for my $meth (qw(max maxstr min minstr sum)){
     eval qq{
-      sub Class::Array::$meth
+      sub Class::Builtin::Array::$meth
       {
 	my \$ret  = List::Util::$meth(\@{\$_[0]});
-	Class::Scalar->new(\$ret);
+	Class::Builtin::Scalar->new(\$ret);
       }
     };
     die $@ if $@;
@@ -186,7 +187,7 @@ sub reduce {
 	${$pkg . '::b'} = $_;
 	$reduced = $block->();
     }
-    return Class::Scalar->new($reduced);
+    return Class::Builtin::Scalar->new($reduced);
 }
 
 sub shuffle {
@@ -196,20 +197,20 @@ sub shuffle {
 }
 
 
-1; # end of Class::Array
+1; # end of Class::Builtin::Array
 
 =head1 NAME
 
-Class::Array - Array as an object
+Class::Builtin::Array - Array as an object
 
 =head1 VERSION
 
-$Id: Array.pm,v 0.1 2009/06/21 09:09:26 dankogai Exp dankogai $
+$Id: Array.pm,v 0.2 2009/06/21 15:44:41 dankogai Exp dankogai $
 
 =head1 SYNOPSIS
 
-  use Class::Array;                    # use Class::Builtin;
-  my $foo = Class::Array->new([0..9]); # OO([0..9]);
+  use Class::Builtin::Array;                    # use Class::Builtin;
+  my $foo = Class::Builtin::Array->new([0..9]); # OO([0..9]);
   print $foo->length; # 10
 
 =head1 EXPORT
@@ -220,7 +221,7 @@ None.  But see L<Class::Builtin>
 
 This section is under construction. For the time being, try
 
-  print Class::Array->new([])->methods->join("\n")
+  print Class::Builtin::Array->new([])->methods->join("\n")
 
 =head1 TODO
 
@@ -234,7 +235,7 @@ This section itself is to do :)
 
 =head1 SEE ALSO
 
-L<Class::Builtin>, L<Class::Scalar>, L<Class::Hash>
+L<Class::Builtin>, L<Class::Builtin::Scalar>, L<Class::Builtin::Hash>
 
 =head1 AUTHOR
 

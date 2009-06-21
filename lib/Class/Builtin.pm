@@ -2,11 +2,11 @@ package Class::Builtin;
 use 5.008001;
 use warnings;
 use strict;
-our $VERSION = sprintf "%d.%02d", q$Revision: 0.1 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%02d", q$Revision: 0.2 $ =~ /(\d+)/g;
 
-use Class::Scalar ();
-use Class::Array ();
-use Class::Hash ();
+use Class::Builtin::Scalar ();
+use Class::Builtin::Array ();
+use Class::Builtin::Hash ();
 
 require Exporter;
 use base qw/Exporter/;
@@ -14,8 +14,8 @@ use base qw/Exporter/;
 our @EXPORT = qw(OO);
 
 our %new = (
-    '' => 'Class::Scalar',
-    map { $_ => 'Class::' . ucfirst( lc($_) ) } qw/ARRAY HASH/
+    '' => __PACKAGE__ . '::Scalar',
+    map { $_ => __PACKAGE__ . '::' . ucfirst( lc($_) ) } qw/ARRAY HASH/
   );
 
 sub new {
@@ -46,7 +46,7 @@ Class::Builtin - Scalar/Array/Hash as objects
 
 =head1 VERSION
 
-$Id: Builtin.pm,v 0.1 2009/06/21 09:09:26 dankogai Exp dankogai $
+$Id: Builtin.pm,v 0.2 2009/06/21 15:44:41 dankogai Exp dankogai $
 
 =head1 SYNOPSIS
 
@@ -69,7 +69,11 @@ C<OO>
 
 =head1 FUNCTIONS
 
-See L<Class::Scalar>, L<Class::Array>, and L<Class::Hash> for details.
+See
+L<Class::Builtin::Scalar>, 
+L<Class::Builtin::Array>, 
+and L<Class::Builtin::Hash> 
+for details.
 
 To check what methods the object has, simply try
 
@@ -81,9 +85,11 @@ Dan Kogai, C<< <dankogai at dan.co.jp> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-class-builtin at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Class-Builtin>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
+Please report any bugs or feature requests to C<bug-class-builtin at
+rt.cpan.org>, or through the web interface at
+L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Class-Builtin>.  I
+will be notified, and then you'll automatically be notified of
+progress on your bug as I make changes.
 
 =head1 SUPPORT
 
