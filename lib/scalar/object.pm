@@ -3,7 +3,7 @@ package scalar::object;
 use strict;
 use warnings;
 use overload ();
-use Class::Scalar;
+use Class::Builtin::Scalar;
 
 my $class = __PACKAGE__;
 
@@ -11,7 +11,7 @@ sub import {
     $^H{$class} = 1;
     overload::constant(
         map {
-            $_ => sub { Class::Scalar->new(shift) }
+            $_ => sub { Class::Builtin::Scalar->new(shift) }
           } qw/integer float binary q/
     );
 }
@@ -29,21 +29,19 @@ sub in_effect {
 
 1;
 
-
 =head1 NAME
 
 scalar::object - automagically turns scalar constants into objects
 
 =head1 VERSION
 
-$Id: object.pm,v 0.1 2009/06/21 09:09:26 dankogai Exp dankogai $
+$Id: object.pm,v 0.2 2009/06/21 15:44:41 dankogai Exp dankogai $
 
 =head1 SYNOPSIS
 
-  use Class::Scalar;
   {
      use scalar::objects;
-     my $o = 42;      # $o is a Class::Scalar object
+     my $o = 42;      # $o is a Class::Builtin::Scalar object
      print 42->length # 2;
   }
   my $n = 1;       # $n is an ordinary scalar
@@ -59,7 +57,7 @@ This section itself is to do :)
 
 =head1 SEE ALSO
 
-L<Class::Builtin>, L<Class::Scalar>
+L<Class::Builtin>, L<Class::Builtin::Scalar>
 
 =head1 AUTHOR
 

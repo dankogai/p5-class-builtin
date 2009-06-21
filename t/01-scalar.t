@@ -6,7 +6,7 @@ use Test::More qw/no_plan/; #tests => 1;
 use Encode;
 
 my $o = OO('小飼弾');
-is(ref $o, 'Class::Scalar', ref $o);
+is(ref $o, 'Class::Builtin::Scalar', ref $o);
 
 is($o->length, 9, sprintf qq('%s'->length), $o);
 is($o->decode_utf8->length, 3, sprintf qq('%s'->decode_utf8->length), $o);

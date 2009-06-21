@@ -1,8 +1,20 @@
 #
-# $Id: Changes,v 0.1 2009/06/21 09:09:26 dankogai Exp dankogai $
+# $Id: Changes,v 0.2 2009/06/21 15:44:41 dankogai Exp dankogai $
 #
 # Revision history for Class-Builtin
-$Revision: 0.1 $
+$Revision: 0.2 $ $Date: 2009/06/21 15:44:41 $
+- lib/Class/Scalar.pm
+- lib/Class/Array.pm
+- lib/Class/Hash.pm
++ lib/Class/Builtin/Scalar.pm
++ lib/Class/Builtin/Array.pm
++ lib/Class/Builtin/Hash.pm
+! MANIFEST t/*.t
+  renamed worker modules to avoid namespace collision.
+  (sorry, hanenkamp)
+
+
+0.01 2009/06/21 09:09:26
 + *
   First version, released on an unsuspecting world.
 
