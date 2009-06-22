@@ -1,8 +1,13 @@
 #
-# $Id: Changes,v 0.2 2009/06/21 15:44:41 dankogai Exp dankogai $
+# $Id: Changes,v 0.3 2009/06/22 15:52:18 dankogai Exp dankogai $
 #
 # Revision history for Class-Builtin
-$Revision: 0.2 $ $Date: 2009/06/21 15:44:41 $
+$Revision: 0.3 $ $Date: 2009/06/22 15:52:18 $
+! *.pm *.t
+  + more methods
+  + more tests
+
+0.02 2009/06/21 15:44:41
 - lib/Class/Scalar.pm
 - lib/Class/Array.pm
 - lib/Class/Hash.pm

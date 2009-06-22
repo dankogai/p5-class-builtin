@@ -35,7 +35,7 @@ scalar::object - automagically turns scalar constants into objects
 
 =head1 VERSION
 
-$Id: object.pm,v 0.2 2009/06/21 15:44:41 dankogai Exp dankogai $
+$Id: object.pm,v 0.2 2009/06/21 15:44:41 dankogai Exp $
 
 =head1 SYNOPSIS
 

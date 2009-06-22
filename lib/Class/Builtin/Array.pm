@@ -2,12 +2,13 @@ package Class::Builtin::Array;
 use 5.008001;
 use warnings;
 use strict;
-our $VERSION = sprintf "%d.%02d", q$Revision: 0.2 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%02d", q$Revision: 0.3 $ =~ /(\d+)/g;
 
+use Carp;
 use List::Util ();
 
 use overload (
-    '""' => sub { CORE::sprintf '[%s]', $_[0]->join(',') },
+    '""' => \&Class::Builtin::Array::dump,
 );
 
 sub new{
@@ -20,12 +21,31 @@ sub clone{
     __PACKAGE__->new([ @{$_[0]} ]);
 }
 
+sub get { $_[0]->[ $_[1] ] }
+
+sub set { $_[0]->[ $_[1] ] = Class::Builtin->new( $_[2] ) }
+
+sub unbless {
+    my $self = shift;
+    [ 
+     CORE::map { eval { $_->can('unbless') } ? $_->unbless : $_ } @$self
+    ];
+}
+
+sub dump {
+    local ($Data::Dumper::Terse)  = 1;
+    local ($Data::Dumper::Indent) = 0;
+    local ($Data::Dumper::Useqq)  = 1;
+    sprintf 'OO(%s)', Data::Dumper::Dumper($_[0]->unbless);
+}
+
+
 for my $unary (qw/shift pop/) {
     eval qq{
      sub Class::Builtin::Array::$unary
      { CORE::$unary \@{\$_[0]} }
     };
-    die $@ if $@;
+    croak $@ if $@;
 }
 
 for my $binary (qw/unshift push/) {
@@ -37,7 +57,7 @@ for my $binary (qw/unshift push/) {
         \$self;
       }
     };
-    die $@ if $@;
+    croak $@ if $@;
 }
 
 sub reverse{
@@ -69,7 +89,7 @@ for my $passive (qw/shift pop unshift push/) {
         \$self->clone->$passive(\@_);
       }
     };
-    die $@ if $@;
+    croak $@ if $@;
 }
 
 sub delete {
@@ -102,7 +122,7 @@ sub sort {
 
 sub grep {
     my $self = CORE::shift;
-    my $block = CORE::shift or die;
+    my $block = CORE::shift or croak;
     my @grepped;
     if ( CORE::ref $block eq 'Regexp' ) {
         for (@$self) {
@@ -121,7 +141,7 @@ sub grep {
 
 sub map {
    my $self   = CORE::shift;
-   my $block  = CORE::shift or die;
+   my $block  = CORE::shift or croak;
    my @mapped;
    CORE::push @mapped, $block->($_) for (@$self);
    __PACKAGE__->new([ @mapped ]);
@@ -131,7 +151,7 @@ sub map {
 
 sub each_with_index {
     my $self = CORE::shift;
-    my $block = CORE::shift or die;
+    my $block = CORE::shift or croak;
     my @mapped;
     for my $i ( 0 .. $self->length - 1 ) {
         CORE::push @mapped,
@@ -145,6 +165,25 @@ sub join {
     my $sep  = CORE::shift || '';
     my $str  = CORE::join( $sep, @$self );
     Class::Builtin::Scalar->new($str);
+}
+
+sub pack {
+    my $self = CORE::shift;
+    my $form = CORE::shift;
+    my $str  = CORE::pack( $form, @$self );
+    Class::Builtin::Scalar->new($str);
+}
+
+sub print {
+    my $self = shift;
+    @_ ? CORE::print {$_[0]} @$self : CORE::print @$self;
+}
+
+sub say {
+    my $self = shift;
+    local $\ = "\n";
+    local $, = ",";
+    @_ ? CORE::print {$_[0]} @$self : CORE::print @$self;
 }
 
 sub methods {
@@ -162,14 +201,14 @@ for my $meth (qw(max maxstr min minstr sum)){
 	Class::Builtin::Scalar->new(\$ret);
       }
     };
-    die $@ if $@;
+    croak $@ if $@;
 }
 
 # They are reinvented. Sigh;
 
 sub first {
     my $self  = CORE::shift;
-    my $block = CORE::shift or die;
+    my $block = CORE::shift or croak;
     for (@$self){
 	return $_ if $block->($_);
     }
@@ -177,25 +216,35 @@ sub first {
 }
 
 sub reduce {
-    my $self  = CORE::shift;
-    my $block = CORE::shift or die;
+    my $self    = CORE::shift;
+    my $block   = CORE::shift or croak;
     my $reduced = $self->[0];
-    my $pkg = caller;
-    for (@$self[1..$self->length - 1]){
-	no strict 'refs';
-	${$pkg . '::a'} = $reduced;
-	${$pkg . '::b'} = $_;
-	$reduced = $block->();
+    my $pkg     = caller;
+    for ( @$self[ 1 .. $self->length - 1 ] ) {
+        no strict 'refs';
+        ${ $pkg . '::a' } = $reduced;
+        ${ $pkg . '::b' } = $_;
+        $reduced = $block->();
     }
     return Class::Builtin::Scalar->new($reduced);
 }
 
 sub shuffle {
-   my $self   = CORE::shift;
-   my @shuffled = List::Util::shuffle @$self;
-   __PACKAGE__->new([@shuffled]);
+    __PACKAGE__->new( [ List::Util::shuffle @{ $_[0] } ] );
 }
 
+# Scalar::Util related
+for my $meth (qw/blessed isweak refaddr reftype weaken/){
+    eval qq{
+      sub Class::Builtin::Array::$meth
+      {
+	my \$self = CORE::shift;
+	my \$ret  = Scalar::Util::$meth(\$self);
+	__PACKAGE__->new(\$ret);
+      }
+    };
+    croak $@ if $@;
+}
 
 1; # end of Class::Builtin::Array
 
@@ -205,7 +254,7 @@ Class::Builtin::Array - Array as an object
 
 =head1 VERSION
 
-$Id: Array.pm,v 0.2 2009/06/21 15:44:41 dankogai Exp dankogai $
+$Id: Array.pm,v 0.3 2009/06/22 15:52:18 dankogai Exp dankogai $
 
 =head1 SYNOPSIS
 
@@ -235,7 +284,7 @@ This section itself is to do :)
 
 =head1 SEE ALSO
 
-L<Class::Builtin>, L<Class::Builtin::Scalar>, L<Class::Builtin::Hash>
+L<autobox>, L<overload>, L<perlfunc> L<http://www.ruby-lang.org/>
 
 =head1 AUTHOR
 
@@ -243,7 +292,7 @@ Dan Kogai, C<< <dankogai at dan.co.jp> >>
 
 =head1 ACKNOWLEDGEMENTS
 
-L<autobox>, L<overload>
+L<autobox>, L<overload>, L<perlfunc>
 
 =head1 COPYRIGHT & LICENSE
 

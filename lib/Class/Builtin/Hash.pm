@@ -2,15 +2,12 @@ package Class::Builtin::Hash;
 use 5.008001;
 use warnings;
 use strict;
-our $VERSION = sprintf "%d.%02d", q$Revision: 0.2 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%02d", q$Revision: 0.3 $ =~ /(\d+)/g;
+
+use Carp;
 
 use overload (
-    '""' => sub { 
-	my $self  = shift;
-	CORE::sprintf '{%s}', $self->keys->sort->map(sub{
-	    sprintf "%s => %s", $_, $self->{$_} 
-	})->join(", ");
-    },
+    '""' => \&Class::Builtin::Hash::dump,
 );
 
 sub new{
@@ -27,6 +24,26 @@ sub clone{
     __PACKAGE__->new({ %{$_[0]} });
 }
 
+sub get { $_[0]->{ $_[1] } }
+
+sub set { $_[0]->{ $_[1] } = Class::Builtin->new( $_[2] ) }
+
+sub unbless {
+    my $self = shift;
+    my %hash;
+    while(my ($k, $v) = each %$self){
+	$hash{$k} = eval { $v->can('unbless') } ? $v->unbless: $v;
+    }
+    \%hash;
+}
+
+sub dump {
+    local ($Data::Dumper::Terse)  = 1;
+    local ($Data::Dumper::Indent) = 0;
+    local ($Data::Dumper::Useqq)  = 1;
+    sprintf 'OO(%s)', Data::Dumper::Dumper($_[0]->unbless);
+}
+
 sub delete {
     my $self = shift;
     my @deleted = CORE::delete @{$self}{@_};
@@ -41,12 +58,12 @@ sub exists {
 
 for my $meth (qw/keys values/){
     eval qq{
-     sub Class::Builtin::Hash::$meth
-     {
-       Class::Builtin::Array->new([CORE::$meth \%{\$_[0]}])
-     }
+      sub Class::Builtin::Hash::$meth
+      {
+        Class::Builtin::Array->new([CORE::$meth \%{\$_[0]}])
+      }
     };
-    die $@ if $@;
+    croak $@ if $@;
 }
 
 sub length{
@@ -55,15 +72,42 @@ sub length{
 
 sub each {
     my $self = shift;
-    my $block = shift || die;
+    my $block = shift || croak;
     while (my ($k, $v) = each %$self){
 	$block->($k, $v);
     }
 }
 
+sub print {
+    my $self = shift;
+    @_ ? CORE::print {$_[0]} %$self : CORE::print %$self;
+}
+
+sub say {
+    my $self = shift;
+    local $\ = "\n";
+    local $, = ",";
+    @_ ? CORE::print {$_[0]} %$self : CORE::print %$self;
+}
+
+
+
 sub methods {
     Class::Builtin::Array->new(
         [ sort grep { defined &{$_} } keys %Class::Builtin::Hash:: ] );
+}
+
+# Scalar::Util related
+for my $meth (qw/blessed isweak refaddr reftype weaken/){
+    eval qq{
+      sub Class::Builtin::Hash::$meth
+      {
+	my \$self = CORE::shift;
+	my \$ret  = Scalar::Util::$meth(\$self);
+	__PACKAGE__->new(\$ret);
+      }
+    };
+    croak $@ if $@;
 }
 
 1; # End of Class::Builtin::Hash
@@ -74,7 +118,7 @@ Class::Builtin::Hash - Hash as an object
 
 =head1 VERSION
 
-$Id: Hash.pm,v 0.2 2009/06/21 15:44:41 dankogai Exp dankogai $
+$Id: Hash.pm,v 0.3 2009/06/22 15:52:18 dankogai Exp dankogai $
 
 =head1 SYNOPSIS
 
@@ -104,7 +148,7 @@ This section itself is to do :)
 
 =head1 SEE ALSO
 
-L<Class::Builtin>, L<Class::Builtin::Scalar>, L<Class::Builtin::Array>
+L<autobox>, L<overload>, L<perlfunc> L<http://www.ruby-lang.org/>
 
 =head1 AUTHOR
 
@@ -112,7 +156,7 @@ Dan Kogai, C<< <dankogai at dan.co.jp> >>
 
 =head1 ACKNOWLEDGEMENTS
 
-L<autobox>, L<overload>
+L<autobox>, L<overload>, L<perlfunc>
 
 =head1 COPYRIGHT & LICENSE
 

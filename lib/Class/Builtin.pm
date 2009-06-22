@@ -2,11 +2,13 @@ package Class::Builtin;
 use 5.008001;
 use warnings;
 use strict;
-our $VERSION = sprintf "%d.%02d", q$Revision: 0.2 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%02d", q$Revision: 0.3 $ =~ /(\d+)/g;
 
 use Class::Builtin::Scalar ();
 use Class::Builtin::Array ();
 use Class::Builtin::Hash ();
+use Data::Dumper ();
+use Scalar::Util ();
 
 require Exporter;
 use base qw/Exporter/;
@@ -46,7 +48,7 @@ Class::Builtin - Scalar/Array/Hash as objects
 
 =head1 VERSION
 
-$Id: Builtin.pm,v 0.2 2009/06/21 15:44:41 dankogai Exp dankogai $
+$Id: Builtin.pm,v 0.3 2009/06/22 15:52:18 dankogai Exp dankogai $
 
 =head1 SYNOPSIS
 
@@ -121,7 +123,7 @@ L<http://search.cpan.org/dist/Class-Builtin/>
 
 =head1 ACKNOWLEDGEMENTS
 
-L<autobox>, L<overload>
+L<autobox>, L<overload>, L<perlfunc> L<http://www.ruby-lang.org/>
 
 =head1 COPYRIGHT & LICENSE
 

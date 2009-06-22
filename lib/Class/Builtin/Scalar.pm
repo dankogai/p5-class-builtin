@@ -2,10 +2,10 @@ package Class::Builtin::Scalar;
 use 5.008001;
 use warnings;
 use strict;
-our $VERSION = sprintf "%d.%02d", q$Revision: 0.2 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%02d", q$Revision: 0.3 $ =~ /(\d+)/g;
 
+use Carp;
 use Encode ();
-use Scalar::Util ();
 
 use overload (
     bool     => sub { !! ${ $_[0] } },
@@ -45,8 +45,17 @@ sub clone{
     __PACKAGE__->new( ${$_[0]} );
 }
 
+sub unbless{ ${$_[0]} }
+
+sub dump {
+    local ($Data::Dumper::Terse)  = 1;
+    local ($Data::Dumper::Indent) = 0;
+    local ($Data::Dumper::Useqq)  = 1;
+    sprintf 'OO(%s)', Data::Dumper::Dumper(${$_[0]});
+}
+
 my @unary = qw(
-  print length defined ref
+  length defined ref
   chomp chop chr lc lcfirst ord reverse uc ucfirst
   cos sin exp log sqrt int
   hex oct
@@ -54,19 +63,74 @@ my @unary = qw(
 
 for my $meth (@unary) {
     eval qq{
-    sub Class::Builtin::Scalar::$meth
-    {
+      sub Class::Builtin::Scalar::$meth
+      {
 	my \$self = shift;
 	my \$ret  = CORE::$meth(\$\$self);
 	__PACKAGE__->new(\$ret);
-    }
+      }
     };
-    die $@ if $@;
+    croak $@ if $@;
 }
 
-sub substr{
+sub atan2{
+    my $self   = shift;
+    my $second = shift || 1;
+    __PACKAGE__->new( CORE::atan2($$self, $second) );
+}
+
+# prototype: $$ => $
+for my $meth (qw/crypt/) {
+    eval qq{
+      sub Class::Builtin::Scalar::$meth
+      {
+	my \$self = shift;
+        my \$arg0 = shift;
+	my \$ret  = CORE::$meth(\$\$self, \$arg0);
+	__PACKAGE__->new(\$ret);
+      }
+    };
+    croak $@ if $@;
+}
+# prototype: $$ => @
+sub unpack{
     my $self = shift;
-    die unless @_ > 0;
+    my $form = shift;
+    my @ret  = CORE::unpack $$self, $form;
+    __PACKAGE__->new([\@ret]);
+}
+
+# prototype: $$;$
+for my $meth (qw/index rindex/) {
+    eval qq{
+      sub Class::Builtin::Scalar::$meth
+      {
+	my \$self = shift;
+        my \$arg0 = shift;
+	my \$ret  = \@_ ? CORE::$meth(\$\$self, \$arg0, shift)
+                        : CORE::$meth(\$\$self, \$arg0);
+	__PACKAGE__->new(\$ret);
+      }
+    };
+    croak $@ if $@;
+}
+
+# prototype:$@
+for my $meth (qw/pack sprintf/) {
+    eval qq{
+      sub Class::Builtin::Scalar::$meth
+      {
+	my \$self = shift;
+	my \$ret  = CORE::$meth(\$\$self, \@_);
+	__PACKAGE__->new(\$ret);
+      }
+    };
+    croak $@ if $@;
+}
+
+sub substr {
+    my $self = shift;
+    croak unless @_ > 0;
     my $ret =
         @_ == 1 ? CORE::substr $$self, $_[0]
       : @_ == 2 ? CORE::substr $$self, $_[0], $_[1]
@@ -79,6 +143,17 @@ sub split {
     my $pat  = shift || qr//;
     my @ret  = CORE::split $pat, $$self;
     Class::Builtin::Array->new( [@ret] );
+}
+
+sub print {
+    my $self = shift;
+    @_ ? CORE::print {$_[0]} $$self : CORE::print $$self;
+}
+
+sub say {
+    my $self = shift;
+    local $\ = "\n";
+    @_ ? CORE::print {$_[0]} $$self : CORE::print $$self;
 }
 
 sub methods {
@@ -96,7 +171,7 @@ for my $meth (qw/decode encode decode_utf8/){
 	__PACKAGE__->new(\$ret);
     }
     };
-    die $@ if $@;
+    croak $@ if $@;
 }
 for my $meth (qw/encode_utf8/){
     eval qq{
@@ -107,8 +182,11 @@ for my $meth (qw/encode_utf8/){
 	__PACKAGE__->new(\$ret);
     }
     };
-    die $@ if $@;
+    croak $@ if $@;
 }
+
+*bytes = \&encode_utf8;
+*utf8  = \&decode_utf8;
 
 # Scalar::Util
 # dualvar() and  set_prototype() not included
@@ -120,26 +198,26 @@ our @scalar_util = qw(
 
 for my $meth (qw/blessed isweak refaddr reftype weaken/){
     eval qq{
-    sub Class::Builtin::Scalar::$meth
-    {
+      sub Class::Builtin::Scalar::$meth
+      {
 	my \$self = shift;
 	my \$ret  = Scalar::Util::$meth(\$self);
 	__PACKAGE__->new(\$ret);
-    }
+      }
     };
-    die $@ if $@;
+    croak $@ if $@;
 }
 
 for my $meth (qw/readonly tainted isvstring looks_like_number/){
     eval qq{
-    sub Class::Builtin::Scalar::$meth
-    {
+      sub Class::Builtin::Scalar::$meth
+      {
 	my \$self = shift;
 	my \$ret  = Scalar::Util::$meth(\$\$self);
 	__PACKAGE__->new(\$ret);
-    }
+      }
     };
-    die $@ if $@;
+    croak $@ if $@;
 }
 
 1; # End of Class::Builtin::Scalar
@@ -150,7 +228,7 @@ Class::Builtin::Scalar - Scalar as an object
 
 =head1 VERSION
 
-$Id: Scalar.pm,v 0.2 2009/06/21 15:44:41 dankogai Exp dankogai $
+$Id: Scalar.pm,v 0.3 2009/06/22 15:52:18 dankogai Exp dankogai $
 
 =head1 SYNOPSIS
 
@@ -190,7 +268,7 @@ Dan Kogai, C<< <dankogai at dan.co.jp> >>
 
 =head1 ACKNOWLEDGEMENTS
 
-L<autobox>, L<overload>
+L<autobox>, L<overload>, L<perlfunc> L<http://www.ruby-lang.org/>
 
 =head1 COPYRIGHT & LICENSE
 
