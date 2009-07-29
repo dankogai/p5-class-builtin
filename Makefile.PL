@@ -1,5 +1,5 @@
 #
-# $Id: Makefile.PL,v 0.2 2009/06/22 15:52:18 dankogai Exp dankogai $
+# $Id: Makefile.PL,v 0.3 2009/07/29 09:03:04 dankogai Exp $
 #
 use 5.008001;
 use strict;
@@ -22,6 +22,10 @@ WriteMakefile(
         'Scalar::Util' => 0,
         'List::Util'   => 0,
     },
+    ( $ExtUtils::MakeMaker::VERSION >= 6.46
+        ? ( META_MERGE => { resources => {
+            repository => 'http://github.com/dankogai/p5-class-builtin' } } )
+        : () ),
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES    => 'Class-Builtin-*' },
 );

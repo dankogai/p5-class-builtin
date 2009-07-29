@@ -1,8 +1,13 @@
 #
-# $Id: Changes,v 0.3 2009/06/22 15:52:18 dankogai Exp dankogai $
+# $Id: Changes,v 0.4 2009/07/29 09:03:04 dankogai Exp $
 #
 # Revision history for Class-Builtin
-$Revision: 0.3 $ $Date: 2009/06/22 15:52:18 $
+$Revision: 0.4 $ $Date: 2009/07/29 09:03:04 $
+! Makefile.PL 02-array.t
+  merged giftnuss/p5-class-builtin
+  http://github.com/giftnuss/p5-class-builtin/tree
+
+0.3 2009/06/22 15:52:18
 ! *.pm *.t
   + more methods
   + more tests

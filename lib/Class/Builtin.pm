@@ -2,7 +2,7 @@ package Class::Builtin;
 use 5.008001;
 use warnings;
 use strict;
-our $VERSION = sprintf "%d.%02d", q$Revision: 0.3 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%02d", q$Revision: 0.4 $ =~ /(\d+)/g;
 
 use Class::Builtin::Scalar ();
 use Class::Builtin::Array ();
@@ -48,7 +48,7 @@ Class::Builtin - Scalar/Array/Hash as objects
 
 =head1 VERSION
 
-$Id: Builtin.pm,v 0.3 2009/06/22 15:52:18 dankogai Exp dankogai $
+$Id: Builtin.pm,v 0.4 2009/07/29 09:03:56 dankogai Exp $
 
 =head1 SYNOPSIS
 

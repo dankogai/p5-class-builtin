@@ -228,7 +228,7 @@ Class::Builtin::Scalar - Scalar as an object
 
 =head1 VERSION
 
-$Id: Scalar.pm,v 0.3 2009/06/22 15:52:18 dankogai Exp dankogai $
+$Id: Scalar.pm,v 0.3 2009/06/22 15:52:18 dankogai Exp $
 
 =head1 SYNOPSIS
 

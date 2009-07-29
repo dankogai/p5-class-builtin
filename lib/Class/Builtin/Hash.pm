@@ -118,7 +118,7 @@ Class::Builtin::Hash - Hash as an object
 
 =head1 VERSION
 
-$Id: Hash.pm,v 0.3 2009/06/22 15:52:18 dankogai Exp dankogai $
+$Id: Hash.pm,v 0.3 2009/06/22 15:52:18 dankogai Exp $
 
 =head1 SYNOPSIS
 
