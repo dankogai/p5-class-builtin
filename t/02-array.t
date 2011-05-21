@@ -9,7 +9,7 @@ is(ref $o, 'Class::Builtin::Array', ref $o);
 is($o->[1], 1);
 is($o->[1]->length, 1);
 is_deeply($o, OO[0,1,2,3,4,5,6,7]);
-is($o->reverse, OO([reverse 0..7]),'method reverse');
+is($o->reverse . "", OO([reverse 0..7]) . "",'method reverse');
 is($o->shift, 0);
 is($o->length, 7);
 is($o->unshift(0)->length, 8);

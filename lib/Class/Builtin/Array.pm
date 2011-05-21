@@ -2,7 +2,7 @@ package Class::Builtin::Array;
 use 5.008001;
 use warnings;
 use strict;
-our $VERSION = sprintf "%d.%02d", q$Revision: 0.3 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%02d", q$Revision: 0.4 $ =~ /(\d+)/g;
 
 use Carp;
 use List::Util ();
@@ -60,8 +60,8 @@ for my $binary (qw/unshift push/) {
     croak $@ if $@;
 }
 
-sub reverse{
-    __PACKAGE__->new([ reverse @{$_[0]} ]);
+sub reverse {
+    __PACKAGE__->new( [ reverse @{ $_[0] } ] );
 }
 
 sub splice {
@@ -254,7 +254,7 @@ Class::Builtin::Array - Array as an object
 
 =head1 VERSION
 
-$Id: Array.pm,v 0.3 2009/06/22 15:52:18 dankogai Exp $
+$Id: Array.pm,v 0.4 2011/05/21 21:40:54 dankogai Exp dankogai $
 
 =head1 SYNOPSIS
 
